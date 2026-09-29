@@ -183,18 +183,31 @@ main,
 .eyebrow {
   margin: 0 0 0.75rem;
   font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--sky-deep);
 }
 
 .hero-title {
   margin: 0 0 1rem;
+  font-family: "Nunito", "Inter", system-ui, sans-serif;
   font-size: clamp(2rem, 5.5vw, 2.875rem);
-  font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -0.035em;
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  animation: title-pop 0.65s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+@keyframes title-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .hero-sub {
@@ -211,8 +224,8 @@ main,
   font-size: 0.9375rem;
   line-height: 1.55;
   color: var(--text);
-  background: rgba(255, 255, 255, 0.65);
-  border: 1px solid rgba(135, 206, 235, 0.45);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px dashed rgba(135, 206, 235, 0.75);
   border-radius: var(--radius);
 }
 
@@ -269,6 +282,24 @@ main,
   animation: cta-vibrate-fast 0.35s linear infinite;
   box-shadow: var(--shadow-hover);
   outline: none;
+}
+
+.btn-emoji {
+  display: inline-block;
+  animation: emoji-wiggle 1.2s ease-in-out infinite;
+}
+
+@keyframes emoji-wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    transform: rotate(-12deg) scale(1.08);
+  }
+  75% {
+    transform: rotate(12deg) scale(1.08);
+  }
 }
 
 @keyframes cta-vibrate-burst {
@@ -328,11 +359,12 @@ main,
 
 .section-title {
   margin: 0 0 1.75rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-family: "Nunito", "Inter", sans-serif;
+  font-size: 0.875rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--sky-deep);
 }
 
 .steps {
@@ -354,17 +386,24 @@ main,
 }
 
 .step-label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
-  padding-top: 0.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  background: var(--sky);
+  border-radius: 999px;
 }
 
 .steps h3 {
   margin: 0 0 0.25rem;
-  font-size: 1rem;
-  font-weight: 600;
+  font-family: "Nunito", "Inter", sans-serif;
+  font-size: 1.0625rem;
+  font-weight: 800;
 }
 
 .steps p {
@@ -428,6 +467,11 @@ main,
 
   .btn-cta:hover,
   .btn-cta:focus-visible {
+    animation: none;
+  }
+
+  .hero-title,
+  .btn-emoji {
     animation: none;
   }
 }
