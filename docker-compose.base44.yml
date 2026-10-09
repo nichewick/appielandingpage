@@ -1,0 +1,19 @@
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "3000:80"
+    volumes:
+      - ./:/usr/share/nginx/html:ro
+      # Main config: workers run as root so the 0700 root:root repo mount is readable.
+      - ./nginx.base44.main.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx.base44.conf:/etc/nginx/conf.d/default.conf:ro
+    environment:
+      - BASE44_PREVIEW_MODE
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/ || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    restart: on-failure
