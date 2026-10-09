@@ -18,34 +18,38 @@
 
   var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  // A cumulus silhouette is a row of lobes sitting on one flat base line, so the
+  // cloud has a billowing top and a flat underside, like the real thing. Each
+  // lobe is [cx, rx, ry] in the cloud viewBox; the last, widest lobe gives the
+  // mass its solid core.
+  var CLOUD_VIEW_W = 200;
+  var CLOUD_VIEW_H = 80;
+  var CLOUD_BASE_Y = 68;
+
   var CUMULUS_SHAPES = [
     [
-      [62, 54, 38, 24, "shade"],
-      [98, 46, 36, 28, "shade"],
-      [138, 50, 44, 26, "shade"],
-      [78, 50, 46, 30, "lit"],
-      [118, 44, 40, 32, "lit"],
-      [158, 48, 36, 26, "lit"],
-      [100, 58, 58, 17, "lit"],
-      [132, 60, 32, 14, "lit"],
+      [34, 20, 15],
+      [60, 29, 25],
+      [94, 27, 22],
+      [126, 22, 17],
+      [152, 16, 11],
+      [96, 64, 13],
     ],
     [
-      [50, 50, 32, 20, "shade"],
-      [88, 44, 40, 26, "shade"],
-      [122, 48, 36, 22, "shade"],
-      [70, 48, 38, 28, "lit"],
-      [108, 42, 42, 30, "lit"],
-      [90, 56, 48, 15, "lit"],
+      [30, 18, 13],
+      [58, 27, 24],
+      [92, 30, 21],
+      [124, 24, 18],
+      [150, 15, 10],
+      [92, 60, 12],
     ],
     [
-      [72, 52, 48, 28, "shade"],
-      [118, 46, 42, 30, "shade"],
-      [162, 52, 40, 24, "shade"],
-      [92, 48, 52, 32, "lit"],
-      [138, 44, 46, 34, "lit"],
-      [175, 50, 34, 22, "lit"],
-      [110, 60, 62, 18, "lit"],
-      [56, 54, 26, 16, "lit"],
+      [40, 21, 16],
+      [70, 30, 26],
+      [106, 28, 22],
+      [140, 23, 18],
+      [166, 14, 10],
+      [104, 66, 13],
     ],
   ];
 
@@ -70,19 +74,20 @@
     ],
   ];
 
-  function puffMarkup(ellipses, viewW, viewH) {
-    return ellipses
-      .map(function (e) {
-        var fill = e[4] === "shade" ? "url(#puff-shade)" : "url(#puff-lit)";
+  function lobesMarkup(lobes, fill) {
+    return lobes
+      .map(function (lobe) {
+        var rx = lobe[1];
+        var ry = lobe[2];
         return (
           '<ellipse cx="' +
-          e[0] +
+          lobe[0] +
           '" cy="' +
-          e[1] +
+          (CLOUD_BASE_Y - ry) +
           '" rx="' +
-          e[2] +
+          rx +
           '" ry="' +
-          e[3] +
+          ry +
           '" fill="' +
           fill +
           '"/>'
@@ -91,45 +96,74 @@
       .join("");
   }
 
+  // Soft caps of light on the tallest lobes, where the sun would strike them.
+  function rimMarkup(lobes) {
+    return lobes
+      .filter(function (lobe) {
+        return lobe[2] >= 20;
+      })
+      .map(function (lobe) {
+        var cx = lobe[0] - lobe[1] * 0.16;
+        var cy = CLOUD_BASE_Y - lobe[2] + lobe[2] * 0.4;
+        return (
+          '<ellipse cx="' +
+          cx +
+          '" cy="' +
+          cy +
+          '" rx="' +
+          lobe[1] * 0.6 +
+          '" ry="' +
+          lobe[2] * 0.46 +
+          '" fill="url(#puff-rim)"/>'
+        );
+      })
+      .join("");
+  }
+
   function buildCloudSvg(options) {
     var width = options.width;
-    var height = options.height;
-    var ellipses = options.ellipses;
+    var lobes = options.lobes;
     var filterId = options.filterId;
     var withShadow = options.withShadow;
-    var viewW = options.viewW || 200;
-    var viewH = options.viewH || 80;
 
-    var shadow = withShadow
+    var ground = withShadow
       ? '<ellipse cx="' +
-        viewW / 2 +
+        CLOUD_VIEW_W / 2 +
         '" cy="' +
-        (viewH - 6) +
+        (CLOUD_VIEW_H - 4) +
         '" rx="' +
-        viewW * 0.34 +
-        '" ry="7" fill="rgba(120,160,185,0.18)"/>'
+        CLOUD_VIEW_W * 0.36 +
+        '" ry="6" fill="rgba(120,160,185,0.16)"/>'
       : "";
-
-    var body = puffMarkup(ellipses, viewW, viewH);
 
     return (
       '<svg class="cloud-svg" viewBox="0 0 ' +
-      viewW +
+      CLOUD_VIEW_W +
       " " +
-      viewH +
+      CLOUD_VIEW_H +
       '" width="' +
       width +
       '" aria-hidden="true">' +
+      ground +
+      // The same silhouette nudged downwards, blurred, peeking out beneath the
+      // body as the shaded underside of the cloud.
+      '<g filter="url(#cloud-haze)" transform="translate(0,7)">' +
+      lobesMarkup(lobes, "url(#puff-shade)") +
+      "</g>" +
+      // Main mass, lit from the upper left.
       '<g filter="url(#' +
       filterId +
       ')">' +
-      shadow +
-      body +
-      "</g></svg>"
+      lobesMarkup(lobes, "url(#puff-lit)") +
+      "</g>" +
+      '<g filter="url(#cloud-rim)">' +
+      rimMarkup(lobes) +
+      "</g>" +
+      "</svg>"
     );
   }
 
-  function buildWispSvg(shape, width, height) {
+  function buildWispSvg(shape, width) {
     var parts = shape
       .map(function (e) {
         return (
@@ -141,7 +175,7 @@
           e[2] +
           '" ry="' +
           e[3] +
-          '" fill="rgba(255,255,255,0.5)"/>'
+          '" fill="url(#wisp-grad)"/>'
         );
       })
       .join("");
@@ -202,11 +236,9 @@
           svg: buildCloudSvg({
             width: width,
             height: height,
-            ellipses: shape,
+            lobes: shape,
             filterId: "cloud-hero",
             withShadow: true,
-            viewW: 200,
-            viewH: 80,
           }),
         })
       );
@@ -261,11 +293,9 @@
         : buildCloudSvg({
             width: width,
             height: height,
-            ellipses: shape,
+            lobes: shape,
             filterId: "cloud-soft",
             withShadow: true,
-            viewW: 200,
-            viewH: 80,
           });
 
       list.push(

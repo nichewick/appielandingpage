@@ -34,15 +34,36 @@
         <filter id="cloud-wisp" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="16" />
         </filter>
-        <radialGradient id="puff-lit" cx="40%" cy="35%" r="65%">
-          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.98" />
-          <stop offset="55%" stop-color="#f4fbff" stop-opacity="0.88" />
-          <stop offset="100%" stop-color="#c8e4f2" stop-opacity="0.35" />
+        <filter id="cloud-haze" x="-40%" y="-60%" width="180%" height="240%">
+          <feGaussianBlur stdDeviation="10" />
+        </filter>
+        <filter id="cloud-rim" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="3" />
+        </filter>
+        <!-- Each lobe is lit from the upper left, cooling towards its base. -->
+        <radialGradient id="puff-lit" cx="38%" cy="18%" r="92%">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="1" />
+          <stop offset="45%" stop-color="#f8fcff" stop-opacity="0.97" />
+          <stop offset="78%" stop-color="#dcedf9" stop-opacity="0.9" />
+          <stop offset="100%" stop-color="#bcd9ea" stop-opacity="0.72" />
         </radialGradient>
-        <radialGradient id="puff-shade" cx="50%" cy="60%" r="70%">
-          <stop offset="0%" stop-color="#e8f4fa" stop-opacity="0.75" />
-          <stop offset="100%" stop-color="#9ec6dc" stop-opacity="0.2" />
+        <!-- Blue-grey underside, seen as a crescent beneath each lobe. -->
+        <radialGradient id="puff-shade" cx="50%" cy="62%" r="68%">
+          <stop offset="0%" stop-color="#c6dded" stop-opacity="0.9" />
+          <stop offset="60%" stop-color="#a2c2d9" stop-opacity="0.72" />
+          <stop offset="100%" stop-color="#8aafca" stop-opacity="0.35" />
         </radialGradient>
+        <radialGradient id="puff-rim" cx="42%" cy="32%" r="70%">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85" />
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+        </radialGradient>
+        <!-- Streaks fade out at both ends instead of ending in a hard edge. -->
+        <linearGradient id="wisp-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="0" />
+          <stop offset="30%" stop-color="#ffffff" stop-opacity="0.75" />
+          <stop offset="70%" stop-color="#ffffff" stop-opacity="0.75" />
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+        </linearGradient>
       </defs>
     </svg>
     <div class="sky-gradient"></div>
